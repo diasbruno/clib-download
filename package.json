@@ -2,6 +2,9 @@
   "name": "clib-download",
   "version": "0.1.0",
   "repo": "diasbruno/clib-download",
+  "description": "utility to dowloads packages.",
+  "license": "MIT",
+  "keywords": ["clib", "download"],
   "dependencies": {
     "stephenmathieson/trim.c": "0.0.2",
     "which": "0.1.3",
