@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "trim/trim.h"
 #include "clib-download.h"
+#include "shcmd/shcmd.h"
 
 static const char*
 get_home_dir(void)
@@ -45,22 +47,23 @@ clib_rscs_check_dir(struct clib_rscs_t* rscs, int verbose)
 }
 
 char*
-clib_package_archive_url(const char* a, const char* n, const char* v)
+clib_package_archive_url(const char* host, const char* a,
+                         const char* n, const char* v)
 {
-#define GITHUB_URL "http://github.com"
-  int size = sizeof(GITHUB_URL) + 1 // /
-    + strlen(a) + 1 // /
-    + strlen(n) + 1 // /
-    + sizeof("archive") + 1 // /
-    + strlen(v) + 1 // \0
-    ;
+  char *url = malloc(sizeof(char) * 1024);
+  char* cmd = NULL;
+  memset(url, '\0', 1024);
 
-  char *url = malloc(size);
   if (url) {
-    memset(url, '\0', size);
-    sprintf(url, "%s/%s/%s/archive/%s.zip", GITHUB_URL, a, n, v);
+    asprintf(&cmd, "sh ./scripts/archive.sh %s %s %s %s", host, a, n, v);
+
+    if (cmd) {
+      shcmd(cmd, url);
+    }
   }
-#undef GITHUB_URL
+
+  free(cmd);
+
   return url;
 }
 
@@ -184,7 +187,7 @@ clib_download_package(struct clib_rscs_t* rscs, const char* pkg, int verbose)
   char* d = rscs->dir;
 
   char* pathversion = clib_package_archive_version_path(d, a, n, v);
-  char* url = NULL;
+  char* url  = NULL;
   char* file = NULL;
   char* path = NULL;
 
@@ -194,18 +197,20 @@ clib_download_package(struct clib_rscs_t* rscs, const char* pkg, int verbose)
     free((void*)pathversion);
     return;
   }
-  
-  url  = clib_package_archive_url(a, n, v);
+
+  url  = clib_package_archive_url("github", a, n, v);
+  url  = trim(url);
   file = clib_package_archive_file(d, a, n, v);
   path = clib_package_archive_path(d, a, n);
 
   VERBOSE { printf("- download from %s\n", url); }
-  
+
   // user/package
   if (-1 == mkdirp(path, 0755)) {
     fprintf(stderr, "Failed to create the path %s\n", path);
     goto cleanup;
   }
+
   // user/package
   if (-1 == fs_exists(path)) {
     fprintf(stderr, "Failed to create the path %s\n", path);

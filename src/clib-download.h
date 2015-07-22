@@ -57,7 +57,8 @@ void clib_download_package(struct clib_rscs_t* rscs,
 /**
  *
  */
-char* clib_package_archive_url(const char* a, const char* n, const char* v);
+char* clib_package_archive_url(const char* host,
+                               const char* a, const char* n, const char* v);
 /**
  *
  */

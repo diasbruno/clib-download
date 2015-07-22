@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
   command_t program;
   program.usage = "[options]";
   command_init(&program, PROGRAM_NAME, CLIB_DONWLOAD_VERSION);
+  command_option(&program, "-g", "--github", "downloads from github", setopt_verbose);
   command_option(&program, "-v", "--verbose", "set verbose output", setopt_verbose);
   command_parse(&program, argc, argv);
 
@@ -66,9 +67,7 @@ int main(int argc, char *argv[])
   }
   cmd = trim(cmd);
 
-  if (0 == strcmp(cmd, "pkg")) {
-    clib_download_packages(&rscs, argc, argv, verbose);
-  }
+  clib_download_packages(&rscs, argc, argv, verbose);
 
 cleanup:
   free(cmd);
