@@ -1,4 +1,5 @@
 #ifndef CLIB_DOWNLOAD_H
+#define CLIB_DOWNLOAD_H 1
 
 #include "asprintf/asprintf.h"
 #include "fs/fs.h"
@@ -79,5 +80,4 @@ void clib_package_unpack(const char* file, const char* path,
  */
 void clib_rscs_free(struct clib_rscs_t* rscs);
 
-#define CLIB_DOWNLOAD_H 1
 #endif
